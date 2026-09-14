@@ -6,10 +6,11 @@ interface EnvConfig {
   PORT: string;
   DB_URL: string;
   NODE_ENV: "development" | "production";
+  SALT_ROUNDS: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
-  const requiredEnvVariables = ["PORT", "DB_URL", "NODE_ENV"];
+  const requiredEnvVariables = ["PORT", "DB_URL", "NODE_ENV", "SALT_ROUNDS"];
 
   requiredEnvVariables.forEach((key) => {
     if (!process.env[key]) {
@@ -21,6 +22,7 @@ const loadEnvVariables = (): EnvConfig => {
     PORT: process.env.PORT as string,
     DB_URL: process.env.DB_URL!,
     NODE_ENV: process.env.NODE_ENV as "development" | "production",
+    SALT_ROUNDS: process.env.SALT_ROUNDS as string,
   };
 };
 
