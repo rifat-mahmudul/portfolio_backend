@@ -6,7 +6,7 @@ interface EnvConfig {
   PORT: string;
   DB_URL: string;
   NODE_ENV: "development" | "production";
-  SALT_ROUNDS: string;
+  SALT_ROUNDS: number;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -22,7 +22,7 @@ const loadEnvVariables = (): EnvConfig => {
     PORT: process.env.PORT as string,
     DB_URL: process.env.DB_URL!,
     NODE_ENV: process.env.NODE_ENV as "development" | "production",
-    SALT_ROUNDS: process.env.SALT_ROUNDS as string,
+    SALT_ROUNDS: Number(process.env.SALT_ROUNDS),
   };
 };
 
