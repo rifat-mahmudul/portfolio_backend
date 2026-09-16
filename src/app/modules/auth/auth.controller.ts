@@ -4,6 +4,7 @@ import { AuthServices } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatusCode from "http-status-codes";
 import { setAuthCookie } from "../../utils/setCookie";
+import AppError from "../../errorHelpers/appError";
 
 const login = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -23,6 +24,31 @@ const login = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getNewAccessToken = catchAsync(async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    throw new AppError(
+      httpStatusCode.BAD_REQUEST,
+      "No refresh token received from cookies",
+    );
+  }
+
+  const tokenInfo = await AuthServices.getNewAccessToken(
+    refreshToken as string,
+  );
+
+  setAuthCookie(res, { accessToken: tokenInfo });
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatusCode.OK,
+    message: "New Access Token Retrieved Successfully",
+    data: tokenInfo,
+  });
+});
+
 export const AuthControllers = {
   login,
+  getNewAccessToken,
 };
