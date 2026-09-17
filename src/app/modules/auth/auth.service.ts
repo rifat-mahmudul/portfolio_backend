@@ -2,7 +2,7 @@ import httpStatusCode from "http-status-codes";
 import AppError from "../../errorHelpers/appError";
 import { IsActive, IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
-import { comparePassword } from "../../utils/password";
+import { comparePassword, hashedPassword } from "../../utils/password";
 import { createUserTokens } from "../../utils/userTokens";
 import { generateToken, verifyToken } from "../../utils/jwt";
 import { envVars } from "../../config/env";
@@ -97,7 +97,48 @@ const getNewAccessToken = async (refreshToken: string) => {
   return accessToken;
 };
 
+const changePassword = async (
+  oldPassword: string,
+  newPassword: string,
+  decodedToken: JwtPayload,
+) => {
+  const user = await User.findById(decodedToken.userId);
+
+  if (!user) {
+    throw new AppError(httpStatusCode.NOT_FOUND, "User not found");
+  }
+
+  const isOldPassMatch = await comparePassword(oldPassword, user.password);
+
+  if (!isOldPassMatch) {
+    throw new AppError(
+      httpStatusCode.UNAUTHORIZED,
+      "Old Password does not match",
+    );
+  }
+
+  if (!newPassword) {
+    throw new AppError(httpStatusCode.BAD_REQUEST, "Please enter new password");
+  }
+
+  const newHashedPass = await hashedPassword(newPassword);
+
+  const isSamePassword = await comparePassword(newPassword, user.password);
+
+  if (isSamePassword) {
+    throw new AppError(
+      httpStatusCode.BAD_REQUEST,
+      "Can't use previous password. Please enter a new password.",
+    );
+  }
+
+  user.password = newHashedPass;
+
+  await user.save();
+};
+
 export const AuthServices = {
   login,
-  getNewAccessToken
+  getNewAccessToken,
+  changePassword,
 };
