@@ -7,6 +7,7 @@ import { createUserTokens } from "../../utils/userTokens";
 import { generateToken, verifyToken } from "../../utils/jwt";
 import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
+import { sendEmail } from "../../utils/sendEmail";
 
 const login = async (payload: Partial<IUser>) => {
   const { email, password: pass } = payload;
@@ -137,8 +138,58 @@ const changePassword = async (
   await user.save();
 };
 
+const forgotPassword = async (email: string) => {
+  const isExist = await User.findOne({ email });
+
+  if (!isExist) {
+    throw new AppError(httpStatusCode.BAD_REQUEST, "User does not exist");
+  }
+
+  // if (!isExist.isVerified) {
+  //   throw new AppError(
+  //     httpStatus.BAD_REQUEST,
+  //     "User is not verified. Please verify your account.",
+  //   );
+  // }
+
+  if (
+    isExist.isActive === IsActive.BLOCKED ||
+    isExist.isActive === IsActive.INACTIVE
+  ) {
+    throw new AppError(
+      httpStatusCode.BAD_REQUEST,
+      `User is ${isExist.isActive}`,
+    );
+  }
+
+  const jwtPayload = {
+    userId: isExist._id,
+    email: isExist.email,
+    role: isExist.role,
+  };
+
+  const resetToken = generateToken(
+    jwtPayload,
+    envVars.JWT_ACCESS_SECRET,
+    envVars.JWT_ACCESS_EXPIRES,
+  );
+
+  const resetULRLink = `${envVars.FRONTEND_URL}/reset-password?id=${isExist._id}&token=${resetToken}`;
+
+  sendEmail({
+    to: isExist.email,
+    subject: "Password Reset",
+    templateName: "forgetPassword",
+    templateData: {
+      name: isExist.name,
+      resetULRLink,
+    },
+  });
+};
+
 export const AuthServices = {
   login,
   getNewAccessToken,
   changePassword,
+  forgotPassword
 };
