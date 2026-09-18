@@ -187,9 +187,44 @@ const forgotPassword = async (email: string) => {
   });
 };
 
+const resetPassword = async (
+  payload: Record<string, any>,
+  resetToken: string,
+) => {
+  if (!resetToken) {
+    throw new AppError(httpStatusCode.UNAUTHORIZED, "Reset token is required");
+  }
+
+  if (!payload.newPassword) {
+    throw new AppError(httpStatusCode.BAD_REQUEST, "New password is required");
+  }
+
+  const decodedToken = verifyToken(
+    resetToken,
+    envVars.JWT_ACCESS_SECRET,
+  ) as JwtPayload;
+
+  if (payload.id != decodedToken.userId) {
+    throw new AppError(401, "You can not reset your password");
+  }
+
+  const isExist = await User.findById(decodedToken.userId);
+
+  if (!isExist) {
+    throw new AppError(httpStatusCode.UNAUTHORIZED, "User doesn't exist");
+  }
+
+  const hashedPass = await hashedPassword(payload.newPassword);
+
+  isExist.password = hashedPass;
+
+  await isExist.save();
+};
+
 export const AuthServices = {
   login,
   getNewAccessToken,
   changePassword,
-  forgotPassword
+  forgotPassword,
+  resetPassword,
 };

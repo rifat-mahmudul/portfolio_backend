@@ -5,6 +5,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatusCode from "http-status-codes";
 import { setAuthCookie } from "../../utils/setCookie";
 import AppError from "../../errorHelpers/appError";
+import { JwtPayload } from "jsonwebtoken";
 
 const login = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -97,10 +98,24 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const authorization = req.headers.authorization;
+
+  await AuthServices.resetPassword(req.body, authorization as string);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatusCode.OK,
+    message: "Password changed Successfully",
+    data: null,
+  });
+});
+
 export const AuthControllers = {
   login,
   getNewAccessToken,
   logOut,
   changePassword,
-  forgotPassword
+  forgotPassword,
+  resetPassword
 };
