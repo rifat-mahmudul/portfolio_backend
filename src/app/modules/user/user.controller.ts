@@ -5,7 +5,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatusCode from "http-status-codes";
 
 const createUser = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const payload = req.body;
 
     const result = await UserServices.createUser(payload);
@@ -19,6 +19,22 @@ const createUser = catchAsync(
   },
 );
 
+const getMe = catchAsync(
+  async (req: Request, res: Response) => {
+    const decodedToken = req.user;
+
+    const result = await UserServices.getMe(decodedToken);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatusCode.OK,
+      message: "User retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
 export const UserControllers = {
   createUser,
+  getMe
 };
