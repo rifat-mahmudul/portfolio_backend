@@ -1,6 +1,6 @@
 import { hashedPassword } from "./../../utils/password";
 import AppError from "../../errorHelpers/appError";
-import { IsActive, IUser } from "./user.interface";
+import { IsActive, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import httpStatusCode from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
@@ -29,6 +29,43 @@ const createUser = async (payload: Partial<IUser>) => {
   return userWithoutPassword;
 };
 
+const updateUser = async (
+  userId: string,
+  decodedToken: JwtPayload,
+  payload: Partial<IUser>,
+) => {
+  if (decodedToken.role === Role.USER) {
+    if (userId !== decodedToken.userId) {
+      throw new AppError(401, "You are not authorized");
+    }
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatusCode.NOT_FOUND, "User not found.");
+  }
+
+  if (payload.role) {
+    if (decodedToken.role === Role.USER) {
+      throw new AppError(httpStatusCode.FORBIDDEN, "You are not authorized");
+    }
+  }
+
+  if (payload.isActive || payload.isVerified) {
+    if (decodedToken.role === Role.USER) {
+      throw new AppError(httpStatusCode.FORBIDDEN, "You are not authorized");
+    }
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(userId, payload, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+
+  return updatedUser;
+};
+
 const getMe = async (decodedToken: JwtPayload) => {
   const userId = decodedToken.userId;
 
@@ -46,5 +83,6 @@ const getMe = async (decodedToken: JwtPayload) => {
 
 export const UserServices = {
   createUser,
+  updateUser,
   getMe,
 };

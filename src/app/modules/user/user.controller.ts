@@ -19,6 +19,23 @@ const createUser = catchAsync(
   },
 );
 
+const updateUser = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const decodedToken = req.user;
+    const payload = req.body;
+
+    const result = await UserServices.updateUser(userId as string, decodedToken, payload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatusCode.OK,
+      message: "User updated successfully.",
+      data: result,
+    });
+  },
+);
+
 const getMe = catchAsync(
   async (req: Request, res: Response) => {
     const decodedToken = req.user;
@@ -36,5 +53,6 @@ const getMe = catchAsync(
 
 export const UserControllers = {
   createUser,
+  updateUser,
   getMe
 };

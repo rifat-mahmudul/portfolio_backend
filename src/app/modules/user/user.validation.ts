@@ -25,7 +25,6 @@ export const updateUserZodSchema = z.object({
     .string()
     .min(2, { message: "User name must be at least 2 character." })
     .optional(),
-  email: z.email({ message: "Invalid email address format." }).optional(),
   role: z.enum(Object.values(Role)).optional(),
   isActive: z.enum(Object.values(IsActive)).optional(),
   isVerified: z.boolean().optional(),
