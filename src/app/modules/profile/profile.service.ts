@@ -30,7 +30,21 @@ const updateProfile = async (payload: Partial<IProfile>) => {
   return updateProfile;
 };
 
+const getProfile = async () => {
+  const profile = await Profile.findOne();
+
+  if (!profile) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Profile not found.",
+    );
+  }
+
+  return profile;
+};
+
 export const ProfileServices = {
   createProfile,
   updateProfile,
+  getProfile
 };

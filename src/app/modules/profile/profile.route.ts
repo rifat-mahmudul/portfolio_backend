@@ -23,4 +23,6 @@ router.patch(
   ProfileControllers.updateProfile,
 );
 
+router.get("/", ProfileControllers.getProfile);
+
 export const ProfileRoutes = router;
