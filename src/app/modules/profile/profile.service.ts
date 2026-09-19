@@ -5,7 +5,7 @@ import httpStatus from "http-status-codes";
 
 const createProfile = async (payload: Partial<IProfile>) => {
   const isExist = await Profile.findOne();
-  
+
   if (isExist) {
     throw new AppError(httpStatus.CONFLICT, "Profile already exists.");
   }
@@ -15,6 +15,22 @@ const createProfile = async (payload: Partial<IProfile>) => {
   return profile;
 };
 
+const updateProfile = async (payload: Partial<IProfile>) => {
+  const profile = await Profile.findOne();
+
+  if (!profile) {
+    throw new AppError(httpStatus.BAD_REQUEST, "No profile found.");
+  }
+
+  const updateProfile = await Profile.findByIdAndUpdate(profile._id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return updateProfile;
+};
+
 export const ProfileServices = {
   createProfile,
+  updateProfile,
 };

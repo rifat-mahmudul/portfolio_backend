@@ -32,7 +32,7 @@ export const updateProfileZodSchema = z.object({
     message: "Bio must be at least 10 characters long.",
   }).optional(),
   profileImage: z.url().optional(),
-  email: z.email(),
+  email: z.email().optional(),
   phone: z.string().optional(),
   location: z.string().optional(),
   github: z.url().optional(),

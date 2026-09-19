@@ -17,6 +17,20 @@ const createProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+
+  const result = await ProfileServices.updateProfile(payload);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Profile updated successfully.",
+    data: result,
+  });
+});
+
 export const ProfileControllers = {
   createProfile,
+  updateProfile
 };
