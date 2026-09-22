@@ -7,6 +7,13 @@ const createProject = async (payload: Partial<IProject>) => {
   return project;
 };
 
+const getAllProjects = async () => {
+  const projects = await Project.find().select("-sections");
+
+  return projects;
+};
+
 export const ProjectServices = {
   createProject,
+  getAllProjects
 };

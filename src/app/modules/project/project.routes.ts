@@ -12,5 +12,6 @@ router.post(
   validateRequest(createProjectZodSchema),
   ProjectControllers.createProject,
 );
+router.get("/", ProjectControllers.getAllProjects);
 
 export const ProjectRoutes = router;
