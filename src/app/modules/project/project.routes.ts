@@ -23,5 +23,10 @@ router.patch(
   validateRequest(updateProjectZodSchema),
   ProjectControllers.updatedProject,
 );
+router.delete(
+  "/:id",
+  checkAuth("ADMIN"),
+  ProjectControllers.deleteProject,
+);
 
 export const ProjectRoutes = router;

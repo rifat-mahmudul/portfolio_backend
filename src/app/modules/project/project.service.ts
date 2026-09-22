@@ -50,9 +50,24 @@ const updateProject = async (projectId: string, payload: Partial<IProject>) => {
   return updatedProject;
 };
 
+const deleteProject = async (projectId: string) => {
+  if (!mongoose.isValidObjectId(projectId)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid project id.");
+  }
+
+  const project = await Project.findById(projectId);
+
+  if (!project) {
+    throw new AppError(httpStatus.NOT_FOUND, "Project not found.");
+  }
+
+  await Project.findByIdAndDelete(projectId);
+};
+
 export const ProjectServices = {
   createProject,
   getAllProjects,
   getSingleProject,
   updateProject,
+  deleteProject,
 };
