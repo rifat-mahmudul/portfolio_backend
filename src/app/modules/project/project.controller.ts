@@ -40,8 +40,22 @@ const getSingleProject = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updatedProject = catchAsync(async (req: Request, res: Response) => {
+  const projectId = req.params.id;
+  const payload = req.body;
+  const project = await ProjectServices.updateProject(projectId as string, payload);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Project updated successfully.",
+    data: project,
+  });
+});
+
 export const ProjectControllers = {
   createProject,
   getAllProjects,
-  getSingleProject
+  getSingleProject,
+  updatedProject,
 };

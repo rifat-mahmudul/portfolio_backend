@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
-import { createProjectZodSchema } from "./project.validation";
+import {
+  createProjectZodSchema,
+  updateProjectZodSchema,
+} from "./project.validation";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { ProjectControllers } from "./project.controller";
 
@@ -14,5 +17,11 @@ router.post(
 );
 router.get("/", ProjectControllers.getAllProjects);
 router.get("/:slug", ProjectControllers.getSingleProject);
+router.patch(
+  "/:id",
+  checkAuth("ADMIN"),
+  validateRequest(updateProjectZodSchema),
+  ProjectControllers.updatedProject,
+);
 
 export const ProjectRoutes = router;
