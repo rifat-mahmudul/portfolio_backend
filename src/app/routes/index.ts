@@ -4,6 +4,7 @@ import { AuthRoutes } from "../modules/auth/auth.route";
 import { ProfileRoutes } from "../modules/profile/profile.route";
 import { ProjectRoutes } from "../modules/project/project.routes";
 import { ExperienceRoutes } from "../modules/experience/experience.route";
+import { SkillRoutes } from "../modules/skill/skill.route";
 
 export const router = Router();
 
@@ -26,8 +27,12 @@ const moduleRoutes = [
   },
   {
     path: "/experience",
-    route: ExperienceRoutes
-  }
+    route: ExperienceRoutes,
+  },
+  {
+    path: "/skill",
+    route: SkillRoutes,
+  },
 ];
 
 moduleRoutes.forEach((route) => {
