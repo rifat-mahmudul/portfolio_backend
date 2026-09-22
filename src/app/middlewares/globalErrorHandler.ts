@@ -1,5 +1,12 @@
+import { Error as MongooseError } from "mongoose";
 import { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
+
 import { envVars } from "../config/env";
+import { handleZodError } from "../errorHelpers/handleZodError";
+import { handleMongooseError } from "../errorHelpers/handleMongooseError";
+import { handleCastError } from "../errorHelpers/handleCastError";
+import { handleDuplicateError } from "../errorHelpers/handleDuplicateError";
 import AppError from "../errorHelpers/appError";
 
 export const globalErrorHandler = (
@@ -9,20 +16,44 @@ export const globalErrorHandler = (
   next: NextFunction,
 ) => {
   let statusCode = 500;
-  let message = "Something Went Wrong!";
+  let message = "Something went wrong!";
+  let errors: any[] = [];
 
   if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
+  } else if (err instanceof ZodError) {
+    const result = handleZodError(err);
+
+    statusCode = result.statusCode;
+    message = result.message;
+    errors = result.errors;
+  } else if (err instanceof MongooseError.ValidationError) {
+    const result = handleMongooseError(err);
+
+    statusCode = result.statusCode;
+    message = result.message;
+    errors = result.errors;
+  } else if (err instanceof MongooseError.CastError) {
+    const result = handleCastError(err);
+
+    statusCode = result.statusCode;
+    message = result.message;
+    errors = result.errors;
+  } else if (err?.code === 11000) {
+    const result = handleDuplicateError(err);
+
+    statusCode = result.statusCode;
+    message = result.message;
+    errors = result.errors;
   } else if (err instanceof Error) {
-    statusCode = 500;
     message = err.message;
   }
 
   res.status(statusCode).json({
     success: false,
     message,
-    err,
+    errors,
     stack: envVars.NODE_ENV === "development" ? err.stack : null,
   });
 };
