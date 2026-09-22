@@ -13,5 +13,6 @@ router.post(
   ProjectControllers.createProject,
 );
 router.get("/", ProjectControllers.getAllProjects);
+router.get("/:slug", ProjectControllers.getSingleProject);
 
 export const ProjectRoutes = router;
