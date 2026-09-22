@@ -98,10 +98,10 @@ const projectSchema = new Schema<IProject>(
   },
 );
 
-export const Project = model<IProject>("Project", projectSchema);
-
-projectSchema.pre("save", function () {
+projectSchema.pre("validate", function () {
   if (this.isModified("title")) {
     this.slug = generateSlug(this.title);
   }
 });
+
+export const Project = model<IProject>("Project", projectSchema);
