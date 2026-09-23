@@ -46,4 +46,18 @@ export const deleteImageFromCloudinary = async (publicId: string) => {
   }
 };
 
+export const getPublicIdFromUrl = (url: string) => {
+  const parts = url.split("/");
+
+  const uploadIndex = parts.indexOf("upload");
+
+  if (uploadIndex === -1) {
+    throw new Error("Invalid Cloudinary URL");
+  }
+
+  const publicIdWithExtension = parts.slice(uploadIndex + 2).join("/");
+
+  return publicIdWithExtension.replace(/\.[^/.]+$/, "");
+};
+
 export const cloudinaryUpload = cloudinary;

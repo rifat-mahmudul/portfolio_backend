@@ -4,6 +4,10 @@ import { IProject } from "./project.interface";
 import { Project } from "./project.model";
 import httpStatus from "http-status-codes";
 import { generateSlug } from "../../utils/slug";
+import {
+  deleteImageFromCloudinary,
+  getPublicIdFromUrl,
+} from "../../config/cloudinary.config";
 
 const createProject = async (payload: Partial<IProject>) => {
   const project = await Project.create(payload);
@@ -59,6 +63,20 @@ const deleteProject = async (projectId: string) => {
 
   if (!project) {
     throw new AppError(httpStatus.NOT_FOUND, "Project not found.");
+  }
+
+  if (project.thumbnail) {
+    const publicId = getPublicIdFromUrl(project.thumbnail);
+
+    await deleteImageFromCloudinary(publicId);
+  }
+
+  if (project.images?.length) {
+    for (const image of project.images) {
+      const publicId = getPublicIdFromUrl(image);
+
+      await deleteImageFromCloudinary(publicId);
+    }
   }
 
   await Project.findByIdAndDelete(projectId);
