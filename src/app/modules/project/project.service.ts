@@ -48,6 +48,11 @@ const updateProject = async (projectId: string, payload: Partial<IProject>) => {
 
   const oldThumbnail = project.thumbnail;
   const oldImages = project.images || [];
+  const newImages = payload.images;
+
+  const removedImages = newImages
+    ? oldImages.filter((image) => !newImages.includes(image))
+    : [];
 
   const updatedProject = await Project.findByIdAndUpdate(projectId, payload, {
     new: true,
@@ -66,6 +71,12 @@ const updateProject = async (projectId: string, payload: Partial<IProject>) => {
 
       await deleteImageFromCloudinary(publicId);
     }
+  }
+
+  for (const image of removedImages) {
+    const publicId = getPublicIdFromUrl(image);
+
+    await deleteImageFromCloudinary(publicId);
   }
 
   return updatedProject;

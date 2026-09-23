@@ -62,8 +62,11 @@ const updatedProject = catchAsync(async (req: Request, res: Response) => {
     payload.thumbnail = files.thumbnail[0].path;
   }
 
-  if (files?.images?.length) {
-    payload.images = files.images.map((file) => file.path);
+  if (req.body.images) {
+    const existingImages = req.body.images;
+    const newImages = files?.images?.map((file) => file.path) || [];
+
+    payload.images = [...existingImages, ...newImages];
   }
 
   const project = await ProjectServices.updateProject(
@@ -72,8 +75,8 @@ const updatedProject = catchAsync(async (req: Request, res: Response) => {
   );
 
   sendResponse(res, {
+    statusCode: 200,
     success: true,
-    statusCode: httpStatus.OK,
     message: "Project updated successfully.",
     data: project,
   });
