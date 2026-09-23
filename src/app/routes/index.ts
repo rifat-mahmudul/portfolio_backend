@@ -9,6 +9,7 @@ import { EducationRoutes } from "../modules/education/education.route";
 import { ServiceRoutes } from "../modules/service/service.route";
 import { ContactRoutes } from "../modules/contact/contact.route";
 import { BlogCategoryRoutes } from "../modules/blogCategory/blogCategory.route";
+import { BlogRoutes } from "../modules/blog/blog.route";
 
 export const router = Router();
 
@@ -52,6 +53,10 @@ const moduleRoutes = [
   {
     path: "/blog-category",
     route: BlogCategoryRoutes,
+  },
+  {
+    path: "/blog",
+    route: BlogRoutes,
   },
 ];
 
