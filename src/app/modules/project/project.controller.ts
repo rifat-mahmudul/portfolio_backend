@@ -49,7 +49,23 @@ const getSingleProject = catchAsync(async (req: Request, res: Response) => {
 
 const updatedProject = catchAsync(async (req: Request, res: Response) => {
   const projectId = req.params.id;
-  const payload = req.body;
+
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[];
+  };
+
+  const payload: Partial<IProject> = {
+    ...req.body,
+  };
+
+  if (files?.thumbnail?.[0]) {
+    payload.thumbnail = files.thumbnail[0].path;
+  }
+
+  if (files?.images?.length) {
+    payload.images = files.images.map((file) => file.path);
+  }
+
   const project = await ProjectServices.updateProject(
     projectId as string,
     payload,

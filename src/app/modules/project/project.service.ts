@@ -46,10 +46,27 @@ const updateProject = async (projectId: string, payload: Partial<IProject>) => {
     payload.slug = generateSlug(payload.title);
   }
 
+  const oldThumbnail = project.thumbnail;
+  const oldImages = project.images || [];
+
   const updatedProject = await Project.findByIdAndUpdate(projectId, payload, {
     new: true,
     runValidators: true,
   });
+
+  if (payload.thumbnail && oldThumbnail) {
+    const publicId = getPublicIdFromUrl(oldThumbnail);
+
+    await deleteImageFromCloudinary(publicId);
+  }
+
+  if (payload.images) {
+    for (const image of oldImages) {
+      const publicId = getPublicIdFromUrl(image);
+
+      await deleteImageFromCloudinary(publicId);
+    }
+  }
 
   return updatedProject;
 };
