@@ -8,6 +8,7 @@ import { handleMongooseError } from "../errorHelpers/handleMongooseError";
 import { handleCastError } from "../errorHelpers/handleCastError";
 import { handleDuplicateError } from "../errorHelpers/handleDuplicateError";
 import AppError from "../errorHelpers/appError";
+import multer from "multer";
 
 export const globalErrorHandler = (
   err: any,
@@ -46,6 +47,14 @@ export const globalErrorHandler = (
     statusCode = result.statusCode;
     message = result.message;
     errors = result.errors;
+  } else if (err instanceof multer.MulterError) {
+    statusCode = 400;
+
+    if (err.code === "LIMIT_FILE_SIZE") {
+      message = "File size must be less than 5MB.";
+    } else {
+      message = err.message;
+    }
   } else if (err instanceof Error) {
     message = err.message;
   }
