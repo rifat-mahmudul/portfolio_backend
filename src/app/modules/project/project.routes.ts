@@ -6,12 +6,17 @@ import {
 } from "./project.validation";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { ProjectControllers } from "./project.controller";
+import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
 
 router.post(
   "/create",
   checkAuth("ADMIN"),
+  multerUpload.fields([
+    { name: "thumbnail", maxCount: 1 },
+    { name: "images", maxCount: 5 },
+  ]),
   validateRequest(createProjectZodSchema),
   ProjectControllers.createProject,
 );
@@ -23,10 +28,6 @@ router.patch(
   validateRequest(updateProjectZodSchema),
   ProjectControllers.updatedProject,
 );
-router.delete(
-  "/:id",
-  checkAuth("ADMIN"),
-  ProjectControllers.deleteProject,
-);
+router.delete("/:id", checkAuth("ADMIN"), ProjectControllers.deleteProject);
 
 export const ProjectRoutes = router;

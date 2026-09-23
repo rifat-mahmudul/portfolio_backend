@@ -3,9 +3,16 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ProjectServices } from "./project.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
+import { IProject } from "./project.interface";
 
 const createProject = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+  const payload: IProject = {
+    ...req.body,
+    thumbnail: files?.thumbnail?.[0]?.path,
+    images: files?.images?.map((file) => file.path),
+  };
 
   const project = await ProjectServices.createProject(payload);
 
@@ -43,7 +50,10 @@ const getSingleProject = catchAsync(async (req: Request, res: Response) => {
 const updatedProject = catchAsync(async (req: Request, res: Response) => {
   const projectId = req.params.id;
   const payload = req.body;
-  const project = await ProjectServices.updateProject(projectId as string, payload);
+  const project = await ProjectServices.updateProject(
+    projectId as string,
+    payload,
+  );
 
   sendResponse(res, {
     success: true,
@@ -70,5 +80,5 @@ export const ProjectControllers = {
   getAllProjects,
   getSingleProject,
   updatedProject,
-  deleteProject
+  deleteProject,
 };
