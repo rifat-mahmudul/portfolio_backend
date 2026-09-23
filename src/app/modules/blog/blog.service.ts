@@ -4,6 +4,7 @@ import httpStatus from "http-status-codes";
 import { BlogCategory } from "../blogCategory/blogCategory.model";
 import { BlogStatus, IBlog } from "./blog.interface";
 import { Blog } from "./blog.model";
+import { generateSlug } from "../../utils/slug";
 
 const calculateReadingTime = (sections: IBlog["sections"]) => {
   const content = sections
@@ -126,6 +127,8 @@ const updateBlog = async (blogId: string, payload: Partial<IBlog>) => {
         "A blog with this title already exists.",
       );
     }
+
+    payload.slug = generateSlug(payload.title);
   }
 
   const updatedData = {
