@@ -6,6 +6,7 @@ import { ProjectRoutes } from "../modules/project/project.routes";
 import { ExperienceRoutes } from "../modules/experience/experience.route";
 import { SkillRoutes } from "../modules/skill/skill.route";
 import { EducationRoutes } from "../modules/education/education.route";
+import { ServiceRoutes } from "../modules/service/service.route";
 
 export const router = Router();
 
@@ -37,7 +38,11 @@ const moduleRoutes = [
   {
     path: "/education",
     route: EducationRoutes,
-  }
+  },
+  {
+    path: "/service",
+    route: ServiceRoutes,
+  },
 ];
 
 moduleRoutes.forEach((route) => {
