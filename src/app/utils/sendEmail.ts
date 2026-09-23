@@ -9,6 +9,7 @@ interface sendEmailOptions {
   subject: string;
   templateName: string;
   templateData?: Record<string, any>;
+  replyTo?: string;
   attachments?: {
     filename: string;
     content: Buffer | string;
@@ -32,6 +33,7 @@ export const sendEmail = async ({
   subject,
   templateName,
   templateData,
+  replyTo,
   attachments,
 }: sendEmailOptions) => {
   try {
@@ -43,6 +45,7 @@ export const sendEmail = async ({
       to: to,
       subject: subject,
       html: html,
+      replyTo,
       attachments: attachments?.map((attachment) => ({
         filename: attachment.filename,
         content: attachment.content,
