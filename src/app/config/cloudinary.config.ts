@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { envVars } from "./env";
 import AppError from "../errorHelpers/appError";
+import httpStatus from "http-status-codes"
 
 cloudinary.config({
   cloud_name: envVars.CLOUDINARY_CLOUD_NAME,
@@ -37,10 +38,23 @@ export const uploadBufferCloudinary = async (
 
 export const deleteImageFromCloudinary = async (publicId: string) => {
   try {
-    await cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(publicId);
+
+    if (result.result !== "ok" && result.result !== "not found") {
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Failed to delete image from Cloudinary.",
+      );
+    }
+
+    return result;
   } catch (error: any) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
-      500,
+      httpStatus.INTERNAL_SERVER_ERROR,
       `Cloudinary image deletion failed: ${error.message}`,
     );
   }
