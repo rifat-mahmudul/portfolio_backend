@@ -5,12 +5,16 @@ import notFound from "./app/middlewares/notFound";
 import { router } from "./app/routes";
 import cookieParser from "cookie-parser";
 import { generalRateLimiter } from "./app/middlewares/rateLimiter";
+import helmet from "helmet";
 
 const app: Application = express();
 
 app.use(cors())
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(helmet)
+
 app.use(generalRateLimiter)
 
 app.use("/api/v1", router);
