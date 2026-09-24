@@ -6,10 +6,14 @@ import { router } from "./app/routes";
 import cookieParser from "cookie-parser";
 import { generalRateLimiter } from "./app/middlewares/rateLimiter";
 import helmet from "helmet";
+import { envVars } from "./app/config/env";
 
 const app: Application = express();
 
-app.use(cors())
+app.use(cors({
+  origin: envVars.FRONTEND_URL,
+  credentials: true
+}))
 app.use(express.json());
 app.use(cookieParser());
 
