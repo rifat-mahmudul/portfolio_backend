@@ -49,7 +49,17 @@ const getBlogAnalytics = async () => {
   };
 };
 
+const getMostViewedBlogs = async () => {
+  const result = await Blog.find()
+    .sort({ views: -1 })
+    .limit(5)
+    .select("title slug views thumbnail");
+
+  return result;
+};
+
 export const DashboardServices = {
   getDashboardStatistics,
-  getBlogAnalytics
+  getBlogAnalytics,
+  getMostViewedBlogs
 };

@@ -30,7 +30,21 @@ const getBlogAnalytics = catchAsync(
   },
 );
 
+const getMostViewedBlogs = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await DashboardServices.getMostViewedBlogs();
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Most viewed blogs retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
 export const DashboardControllers = {
   getDashboardStatistics,
-  getBlogAnalytics
+  getBlogAnalytics, 
+  getMostViewedBlogs
 };

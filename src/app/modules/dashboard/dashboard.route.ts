@@ -17,4 +17,10 @@ router.get(
   DashboardControllers.getBlogAnalytics,
 );
 
+router.get(
+  "/most-viewed-blogs",
+  checkAuth(Role.ADMIN),
+  DashboardControllers.getMostViewedBlogs,
+);
+
 export const DashboardRoutes = router;
