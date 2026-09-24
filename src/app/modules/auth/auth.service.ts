@@ -17,7 +17,7 @@ const login = async (payload: Partial<IUser>) => {
   if (!user) {
     throw new AppError(
       httpStatusCode.BAD_REQUEST,
-      "Invalid email or password.",
+      "Invalid credentials",
     );
   }
 
@@ -25,7 +25,7 @@ const login = async (payload: Partial<IUser>) => {
     user.isActive === IsActive.BLOCKED ||
     user.isActive === IsActive.INACTIVE
   ) {
-    throw new AppError(httpStatusCode.BAD_REQUEST, `User is ${user.isActive}`);
+    throw new AppError(httpStatusCode.BAD_REQUEST, `Invalid credentials`);
   }
 
   //   if (!user.isVerified) {
@@ -38,7 +38,7 @@ const login = async (payload: Partial<IUser>) => {
   const isPassMatch = await comparePassword(pass as string, user.password);
 
   if (!isPassMatch) {
-    throw new AppError(httpStatusCode.BAD_REQUEST, "Incorrect Password");
+    throw new AppError(httpStatusCode.BAD_REQUEST, "Invalid credentials");
   }
 
   const userTokens = createUserTokens(user);
@@ -63,7 +63,7 @@ const getNewAccessToken = async (refreshToken: string) => {
   const isExist = await User.findOne({ email: verifyRefreshToken.email });
 
   if (!isExist) {
-    throw new AppError(httpStatusCode.UNAUTHORIZED, "User doesn't exist.");
+    throw new AppError(httpStatusCode.UNAUTHORIZED, "Invalid credentials.");
   }
 
   if (
@@ -106,7 +106,7 @@ const changePassword = async (
   const user = await User.findById(decodedToken.userId);
 
   if (!user) {
-    throw new AppError(httpStatusCode.NOT_FOUND, "User not found");
+    throw new AppError(httpStatusCode.NOT_FOUND, "Invalid credentials.");
   }
 
   const isOldPassMatch = await comparePassword(oldPassword, user.password);
@@ -114,7 +114,7 @@ const changePassword = async (
   if (!isOldPassMatch) {
     throw new AppError(
       httpStatusCode.UNAUTHORIZED,
-      "Old Password does not match",
+      "Invalid credentials.",
     );
   }
 
@@ -142,7 +142,7 @@ const forgotPassword = async (email: string) => {
   const isExist = await User.findOne({ email });
 
   if (!isExist) {
-    throw new AppError(httpStatusCode.BAD_REQUEST, "User does not exist");
+    throw new AppError(httpStatusCode.BAD_REQUEST, "Invalid credentials.");
   }
 
   // if (!isExist.isVerified) {
