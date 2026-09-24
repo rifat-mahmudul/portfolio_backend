@@ -17,6 +17,20 @@ const getDashboardStatistics = catchAsync(
   },
 );
 
+const getBlogAnalytics = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await DashboardServices.getBlogAnalytics();
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Blog analytics retrieved successfully.",
+      data: result,
+    });
+  },
+);
+
 export const DashboardControllers = {
   getDashboardStatistics,
+  getBlogAnalytics
 };

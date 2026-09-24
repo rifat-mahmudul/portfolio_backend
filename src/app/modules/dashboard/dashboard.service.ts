@@ -39,6 +39,17 @@ const getDashboardStatistics = async () => {
   };
 };
 
+const getBlogAnalytics = async () => {
+  const result = await Blog.aggregate([
+    { $group: { _id: null, totalViews: { $sum: "$views" } } },
+  ]);
+
+  return {
+    totalViews: result[0]?.totalViews || 0,
+  };
+};
+
 export const DashboardServices = {
   getDashboardStatistics,
+  getBlogAnalytics
 };

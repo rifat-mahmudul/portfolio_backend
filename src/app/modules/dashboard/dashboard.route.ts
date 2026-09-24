@@ -11,4 +11,10 @@ router.get(
   DashboardControllers.getDashboardStatistics,
 );
 
+router.get(
+  "/blog-analytics",
+  checkAuth(Role.ADMIN),
+  DashboardControllers.getBlogAnalytics,
+);
+
 export const DashboardRoutes = router;
