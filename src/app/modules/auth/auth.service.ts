@@ -21,11 +21,11 @@ const login = async (payload: Partial<IUser>) => {
     );
   }
 
-  if (user.isActive !== "ACTIVE") {
-    throw new AppError(
-      httpStatusCode.UNAUTHORIZED,
-      "Your account is not active.",
-    );
+  if (
+    user.isActive === IsActive.BLOCKED ||
+    user.isActive === IsActive.INACTIVE
+  ) {
+    throw new AppError(httpStatusCode.BAD_REQUEST, `User is ${user.isActive}`);
   }
 
   //   if (!user.isVerified) {
