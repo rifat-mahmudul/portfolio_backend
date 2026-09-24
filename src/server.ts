@@ -2,6 +2,7 @@ import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import { envVars } from "./app/config/env";
+import { logger } from "./app/utils/logger";
 
 let server: Server;
 
@@ -9,42 +10,44 @@ const bootstrap = async () => {
   try {
     await mongoose.connect(envVars.DB_URL);
 
-    console.log("==> Connected to DB...");
+    logger.info("==> Connected to DB...");
 
     server = app.listen(envVars.PORT, () => {
-      console.log(`==> Server is listening from ${envVars.PORT}`);
+      logger.info(`==> Server is listening from ${envVars.PORT}`);
     });
   } catch (error) {
-    console.log(error);
+    logger.error("Failed to start server", {
+      error: error instanceof Error ? error.message : error,
+    });
   }
 };
 
 bootstrap();
 
 process.on("SIGTERM", () => {
-  console.log("SIGTERM signal received, Sever shutting down...");
+  logger.info("SIGTERM signal received, Server shutting down...");
 
   if (server) {
     server.close(() => {
-      process.exit();
+      process.exit(0);
     });
   }
 });
 
 process.on("SIGINT", () => {
-  console.log("SIGINT signal received, Server shutting down...");
+  logger.info("SIGINT signal received, Server shutting down...");
 
   if (server) {
     server.close(() => {
-      process.exit(1);
+      process.exit(0);
     });
   }
-
-  process.exit(1);
 });
 
 process.on("unhandledRejection", (err) => {
-  console.log("Unhandled Rejection detected, Server shutting down...", err);
+  logger.error("Unhandled Rejection detected, Server shutting down...", {
+    error: err instanceof Error ? err.message : err,
+  });
 
   if (server) {
     server.close(() => {
@@ -56,7 +59,9 @@ process.on("unhandledRejection", (err) => {
 });
 
 process.on("uncaughtException", (err) => {
-  console.log("Uncaught Exception detected, Server shutting down...", err);
+  logger.error("Uncaught Exception detected, Server shutting down...", {
+    error: err instanceof Error ? err.message : err,
+  });
 
   if (server) {
     server.close(() => {

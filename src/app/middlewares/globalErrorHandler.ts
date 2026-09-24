@@ -9,6 +9,7 @@ import { handleCastError } from "../errorHelpers/handleCastError";
 import { handleDuplicateError } from "../errorHelpers/handleDuplicateError";
 import AppError from "../errorHelpers/appError";
 import multer from "multer";
+import { logger } from "../utils/logger";
 
 export const globalErrorHandler = (
   err: any,
@@ -16,6 +17,13 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  logger.error("Request error", {
+    method: req.method,
+    url: req.originalUrl,
+    error: err instanceof Error ? err.message : err,
+    stack: err instanceof Error ? err.stack : undefined,
+  });
+
   let statusCode = 500;
   let message = "Something went wrong!";
   let errors: any[] = [];
